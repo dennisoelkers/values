@@ -1,11 +1,11 @@
 import { createValue } from "./index";
 
 type MeasurementOptions = {
-  magnitude: number,
-  unit: 'cm' | 'ft',
+  magnitude: number;
+  unit: "cm" | "ft";
 };
 
-const defaults = { magnitude: undefined, unit: 'cm' as 'cm' };
+const defaults = { magnitude: undefined, unit: "cm" as "cm" };
 const Measurement = createValue<MeasurementOptions, typeof defaults>(defaults);
 
 describe("Measurement", () => {
@@ -43,19 +43,30 @@ describe("Measurement", () => {
   it("does not permit setting attributes directly", () => {
     const measurement = Measurement({ magnitude: 100, unit: "cm" });
     expect(() => {
+      // @ts-expect-error Properties should not be assignable
       measurement.magnitude = 200;
     }).toThrowErrorMatchingInlineSnapshot(
       `"Cannot assign to read only property 'magnitude' of object '#<Object>'"`
     );
   });
 
+  it("provides helpful string output", () => {
+    const measurement = Measurement({ magnitude: 100, unit: "cm" });
+    expect(measurement).toMatchInlineSnapshot(`
+      Object {
+        "magnitude": 100,
+        "unit": "cm",
+      }
+    `);
+  });
+
   it("uses defaults if property is not specified", () => {
     const measurement = Measurement({ magnitude: 100 });
-    expect(measurement).toEqual(Measurement({ magnitude: 100, unit: 'cm' }));
+    expect(measurement).toEqual(Measurement({ magnitude: 100, unit: "cm" }));
   });
- 
+
   it("throws type error if required property is not specified", () => {
     // @ts-expect-error should complain about missing magnitude
-    const measurement = Measurement({ unit: 'cm' });
+    const measurement = Measurement({ unit: "cm" });
   });
- });
+});
