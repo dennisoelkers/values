@@ -40,12 +40,13 @@ type Foo = DefinedKeys<MeasurementDefaults>;
 type Bar = UndefinedKeys<MeasurementDefaults>;
 type Defaultized = RequiredKeys<MeasurementOptions, UndefinedKeys<MeasurementDefaults>> & OptionalKeys<MeasurementOptions, DefinedKeys<MeasurementDefaults>>;
 
-export const createValue = <T, D extends { [key in keyof T]: any }>(defaults: D) => {
+export const createValue = <T, D extends { [key in keyof T]: any }, JSON = T>(defaults: D, toJSON?: (value: T) => JSON) => {
   // @ts-ignore
   function _Value(props: RequiredKeys<T, UndefinedKeys<D>> & OptionalKeys<T, DefinedKeys<D>>): ValueObject<T> {
     const value = Object.assign({}, defaults, props);
     const Value = {
       toBuilder: () => builder(defaults, value, _Value),
+      toJSON: () => toJSON ? toJSON(value) : value,
     };
     Object.setPrototypeOf(value, Value);
     // @ts-ignore

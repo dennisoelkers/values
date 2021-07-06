@@ -1,3 +1,4 @@
+import { isRegularExpressionLiteral } from "typescript";
 import { createValue } from "./index";
 
 type MeasurementOptions = {
@@ -68,5 +69,53 @@ describe("Measurement", () => {
   it("throws type error if required property is not specified", () => {
     // @ts-expect-error should complain about missing magnitude
     const measurement = Measurement({ unit: "cm" });
+  });
+
+  it("throws error if not all defaults are provided", () => {
+    const defaults = { first: undefined };
+    type UserOptions = {
+      first: string;
+      last: string;
+    };
+
+    // @ts-expect-error defaults are missing some keys from UserOptions
+    const User = createValue<UserOptions, typeof defaults>(defaults);
+  });
+
+  it("allows JSON serialization", () => {
+    const defaults = { first: undefined, last: undefined };
+    type UserOptions = {
+      first: string;
+      last: string;
+    };
+
+    const User = createValue<UserOptions, typeof defaults>(defaults);
+    const user = User({ first: "John", last: "Doe" });
+    expect(JSON.stringify(user)).toMatchInlineSnapshot(
+      `"{\\"first\\":\\"John\\",\\"last\\":\\"Doe\\"}"`
+    );
+  });
+
+  it("allows customizing JSON serialization", () => {
+    const defaults = { first: undefined, last: undefined };
+    type UserOptions = {
+      first: string;
+      last: string;
+    };
+
+    type UserJSON = {
+      name: string;
+    };
+    const toJson = (user: UserOptions): UserJSON => ({
+      name: user.first + " " + user.last,
+    });
+    const User = createValue<UserOptions, typeof defaults, UserJSON>(
+      defaults,
+      toJson
+    );
+    const user = User({ first: "John", last: "Doe" });
+    expect(JSON.stringify(user)).toMatchInlineSnapshot(
+      `"{\\"name\\":\\"John Doe\\"}"`
+    );
   });
 });
