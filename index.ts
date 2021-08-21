@@ -48,9 +48,7 @@ export const createValue = <T, D extends { [key in keyof T]: any }, JSON = T>(de
       toBuilder: () => builder(defaults, value, _Value),
       toJSON: () => toJSON ? toJSON(value) : value,
     };
-    Object.setPrototypeOf(value, Value);
-    // @ts-ignore
-    return Object.freeze(value);
+    return Object.freeze(Object.setPrototypeOf(value, Value));
   }
   
   return _Value;
