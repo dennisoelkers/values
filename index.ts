@@ -3,7 +3,7 @@ type Builder<T> = Readonly<{ [key in keyof T]: (value: T[key]) => Builder<T> } &
 type ValueObject<T> = Readonly<T & { toBuilder: () => Builder<T> }>;
 
 const builder = <T>(defaults: Defaults<T>, obj: T, factory: (v: T) => ValueObject<T>): Builder<T> => {
-  const _builder  = Object.keys(defaults)
+  const _builder = Object.keys(defaults)
     .map((prop) => ({
       get [prop]() {
         return (value: any) => builder<T>(defaults, { ...obj, [prop]: value }, factory);
@@ -12,9 +12,9 @@ const builder = <T>(defaults: Defaults<T>, obj: T, factory: (v: T) => ValueObjec
     .reduce((prev, cur) => ({ ...prev, ...cur }), {});
 
   return Object.freeze({
-    ..._builder as {
+    ...(_builder as {
       [key in keyof T]: (value: T[key]) => Builder<T>;
-    },
+    }),
     build: () => factory(obj),
   });
 };
@@ -33,8 +33,9 @@ export const createValue = <T, D extends { [key in keyof T]: any }, JSON = T>(
 ) => {
   // @ts-ignore
   function _Value(props: RequiredKeys<T, UndefinedKeys<D>> & OptionalKeys<T, DefinedKeys<D>>): ValueObject<T> {
-    const value = Object.assign({}, defaults, props);
+    const value = { ...defaults, ...props };
     const Value = {
+      // @ts-ignore
       toBuilder: () => builder(defaults, value, _Value),
       toJSON: () => (toJSON ? toJSON(value) : value),
     };
