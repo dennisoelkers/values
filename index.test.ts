@@ -1,4 +1,3 @@
-import { isRegularExpressionLiteral } from 'typescript';
 import { createValue } from './index';
 
 type MeasurementOptions = {

@@ -3,10 +3,7 @@ type Builder<T> = Readonly<{ [key in keyof T]: (value: T[key]) => Builder<T> } &
 type ValueObject<T> = Readonly<T & { toBuilder: () => Builder<T> }>;
 
 const builder = <T>(defaults: Defaults<T>, obj: T, factory: (v: T) => ValueObject<T>): Builder<T> => {
-  // @ts-ignore
-  const _builder: {
-    [key in keyof T]: (value: T[key]) => Builder<T>;
-  } = Object.keys(defaults)
+  const _builder  = Object.keys(defaults)
     .map((prop) => ({
       get [prop]() {
         return (value: any) => builder<T>(defaults, { ...obj, [prop]: value }, factory);
@@ -15,7 +12,9 @@ const builder = <T>(defaults: Defaults<T>, obj: T, factory: (v: T) => ValueObjec
     .reduce((prev, cur) => ({ ...prev, ...cur }), {});
 
   return Object.freeze({
-    ..._builder,
+    ..._builder as {
+      [key in keyof T]: (value: T[key]) => Builder<T>;
+    },
     build: () => factory(obj),
   });
 };
@@ -27,19 +26,6 @@ type DefinedKeys<T> = { [P in keyof T]: T[P] extends typeof undefined ? never : 
 
 type RequiredKeys<T, U extends keyof T> = Pick<T, U>;
 type OptionalKeys<T, U extends keyof T> = { [P in keyof Pick<T, U>]?: T[P] };
-
-type MeasurementOptions = {
-  magnitude: number;
-  unit: 'cm' | 'ft';
-};
-
-const MD = { magnitude: undefined, unit: 'cm' };
-type MeasurementDefaults = typeof MD;
-
-type Foo = DefinedKeys<MeasurementDefaults>;
-type Bar = UndefinedKeys<MeasurementDefaults>;
-type Defaultized = RequiredKeys<MeasurementOptions, UndefinedKeys<MeasurementDefaults>> &
-  OptionalKeys<MeasurementOptions, DefinedKeys<MeasurementDefaults>>;
 
 export const createValue = <T, D extends { [key in keyof T]: any }, JSON = T>(
   defaults: D,
