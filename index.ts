@@ -21,21 +21,14 @@ const builder = <T>(defaults: Defaults<T>, obj: T, factory: (v: T) => ValueObjec
 
 type Defaults<T> = { [key in keyof T]: T[key] | undefined };
 
-type UndefinedKeys<T> = { [P in keyof T]: T[P] extends typeof undefined ? P : never }[keyof T];
-type DefinedKeys<T> = { [P in keyof T]: T[P] extends typeof undefined ? never : P }[keyof T];
+type UndefinedKeys<T, D extends Defaults<T>> = { [Key in keyof T]-?: D[Key] extends undefined ? Key : never }[keyof T];
 
-type RequiredKeys<T, U extends keyof T> = Pick<T, U>;
-type OptionalKeys<T, U extends keyof T> = { [P in keyof Pick<T, U>]?: T[P] };
+type DefinedKeys<T, D extends Defaults<T>> = { [Key in keyof T]-?: D[Key] extends undefined ? never : Key }[keyof T];
 
-export const createValue = <T, D extends { [key in keyof T]: any }, JSON = T>(
-  defaults: D,
-  toJSON?: (value: T) => JSON
-) => {
-  // @ts-ignore
-  function _Value(props: RequiredKeys<T, UndefinedKeys<D>> & OptionalKeys<T, DefinedKeys<D>>): ValueObject<T> {
-    const value = { ...defaults, ...props };
+export const createValue = <T, D extends Defaults<T>, JSON = T>(defaults: D, toJSON?: (value: T) => JSON) => {
+  function _Value(props: Partial<Pick<T, DefinedKeys<T, D>>> & Pick<T, UndefinedKeys<T, D>>): ValueObject<T> {
+    const value = { ...defaults, ...props } as T;
     const Value = {
-      // @ts-ignore
       toBuilder: () => builder(defaults, value, _Value),
       toJSON: () => (toJSON ? toJSON(value) : value),
     };
