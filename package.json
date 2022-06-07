@@ -4,6 +4,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "MIT",
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts"
+  ],
   "dependencies": {
     "prettier": "^2.6.2",
     "ts-node": "^10.8.1",
