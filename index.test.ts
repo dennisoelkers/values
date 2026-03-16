@@ -84,7 +84,7 @@ describe('Measurement', () => {
 
     const User = createValue<UserOptions, typeof defaults>(defaults);
     const user = User({ first: 'John', last: 'Doe' });
-    expect(JSON.stringify(user)).toMatchInlineSnapshot(`"{\\"first\\":\\"John\\",\\"last\\":\\"Doe\\"}"`);
+    expect(JSON.stringify(user)).toMatchInlineSnapshot(`"{"first":"John","last":"Doe"}"`);
   });
 
   it('allows customizing JSON serialization', () => {
@@ -102,6 +102,6 @@ describe('Measurement', () => {
     });
     const User = createValue<UserOptions, typeof defaults, UserJSON>(defaults, toJson);
     const user = User({ first: 'John', last: 'Doe' });
-    expect(JSON.stringify(user)).toMatchInlineSnapshot(`"{\\"name\\":\\"John Doe\\"}"`);
+    expect(JSON.stringify(user)).toMatchInlineSnapshot(`"{"name":"John Doe"}"`);
   });
 });
