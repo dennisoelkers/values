@@ -30,7 +30,7 @@ export const createValue = <T, D extends Defaults<T>, JSON = T>(defaults: D, toJ
     const value = { ...defaults, ...props } as T;
     const Value = {
       toBuilder: () => builder(defaults, value, _Value),
-      toJSON: () => (toJSON ? toJSON(value) : value),
+      toJSON: () => (toJSON ? toJSON(value) : { ...value }),
     };
     return Object.freeze(Object.setPrototypeOf(value, Value));
   }

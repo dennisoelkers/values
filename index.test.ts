@@ -44,10 +44,10 @@ describe('Measurement', () => {
     }).toThrowErrorMatchingInlineSnapshot(`"Cannot assign to read only property 'magnitude' of object '#<Object>'"`);
   });
 
-  it.skip('provides helpful string output', () => {
+  it('provides helpful string output', () => {
     const measurement = Measurement({ magnitude: 100, unit: 'cm' });
     expect(measurement).toMatchInlineSnapshot(`
-      Object {
+      {
         "magnitude": 100,
         "unit": "cm",
       }
