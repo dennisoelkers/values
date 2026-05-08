@@ -20,7 +20,7 @@
     "@types/jest": "^30.0.0",
     "babel": "^6.23.0",
     "babel-jest": "^30.3.0",
-    "jest": "^30.3.0"
+    "jest": "^30.4.0"
   },
   "scripts": {
     "prepublish": "tsc",
